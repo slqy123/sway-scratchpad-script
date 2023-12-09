@@ -1,0 +1,31 @@
+# modifier
+mod = 'ctrl+Mod1+Mod4+shift'
+
+[exec_template]
+# for terminal application(TUI), use 'terminal' template
+# for general gui application, the 'default' template is enough
+# available variables:
+# {cmd} - the command to run
+# {class} - the class of the application
+# {app_id} - the app_id of the application
+# {class_or_app_id} - the class or app_id of the application
+__DEFAULT__ = '{cmd}'
+terminal = 'alacritty --class {class_or_app_id} -e {cmd}'
+
+[[apps]]
+# the key binding will be '{mod}+{bind}'
+bind = 't'
+
+# the criteria to match the window,
+# will be parsed to '[key="value"]'
+criteria = { app_id = 'top' }  
+
+# the command to launch the application
+cmd = 'top -u $(whoami)'
+
+# the template to use, default is '__DEFAULT__
+template = 'terminal'
+
+# the size of the window
+resize = [800, 600]
+

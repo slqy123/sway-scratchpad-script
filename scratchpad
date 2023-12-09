@@ -1,0 +1,51 @@
+#!/bin/python
+import subprocess
+import sys
+
+import toml
+
+config = toml.loads(sys.stdin.read())
+
+mod: str = config["mod"]
+
+exec_template: dict = config["exec_template"]
+
+apps: list[dict] = config["apps"]
+
+for app in apps:
+    criteria = (
+        "["
+        + " ".join([f'{key}="{value}"' for key, value in app["criteria"].items()])
+        + "]"
+    )
+    exec = exec_template[app.get("template", "__DEFAULT__")]
+    exec = exec.format(
+        **{
+            "cmd": app.get("cmd", ""),
+            "class": app["criteria"].get("class", ""),
+            "app_id": app["criteria"].get("app_id", ""),
+            "class_or_app_id": app["criteria"].get("class", "")
+            or app["criteria"].get("app_id", ""),
+        }
+    )
+    # subprocess.run(
+    #     f'swaymsg bindsym {mod}+{app["bind"]} exec \'swaymsg {criteria} scratchpad show || exec {exec}\'',
+    #     shell=True,
+    # )
+
+    subprocess.run(
+        [
+            "swaymsg",
+            "bindsym",
+            f'{mod}+{app["bind"]}',
+            "exec",
+            f"swaymsg {criteria} scratchpad show || exec {exec}",
+        ],
+    )
+    resize = app.get("resize", (800, 600))
+    for msg in [
+        "move to scratchpad",
+        "scratchpad show",
+        f"resize set {resize[0]} {resize[1]}",
+    ]:
+        subprocess.run(f"swaymsg for_window {criteria} {msg}", shell=True)
