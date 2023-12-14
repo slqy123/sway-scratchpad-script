@@ -14,9 +14,9 @@ apps: list[dict] = config["apps"]
 
 for app in apps:
     criteria = (
-        "["
+        "[ "
         + " ".join([f'{key}="{value}"' for key, value in app["criteria"].items()])
-        + "]"
+        + " ]"
     )
     exec = exec_template[app.get("template", "__DEFAULT__")]
     exec = exec.format(
